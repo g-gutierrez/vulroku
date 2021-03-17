@@ -7,14 +7,14 @@ module.exports = {
   "development": {
     "username": DB_USER,
     "password": DB_PASS,
-    "database": "space_invaders_db",
+    "database": "vulcan_db",
     "host": DB_HOST,
     "dialect": "mysql"
   },
   "test": {
     "username": DB_USER,
     "password": DB_PASS,
-    "database": "database_test",
+    "database": "vulcan_db",
     "host": DB_HOST,
     "dialect": "mysql"
   },
