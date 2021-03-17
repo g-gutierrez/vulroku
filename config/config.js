@@ -7,22 +7,19 @@ module.exports = {
   "development": {
     "username": DB_USER,
     "password": DB_PASS,
-    "database": "vulcan_db",
+    "database": "space_invaders_db",
     "host": DB_HOST,
     "dialect": "mysql"
   },
   "test": {
     "username": DB_USER,
     "password": DB_PASS,
-    "database": "vulcan_db",
+    "database": "database_test",
     "host": DB_HOST,
     "dialect": "mysql"
   },
-  "prod": {
-    "username": "vulcanadmin",
-    "password": "DennisGlennPatTim",
-    "database": "vulcan_db",
-    "host": "aws-vulcan-mysql.c5ipfwyrck7c.us-east-2.rds.amazonaws.com",
+  "production": {
+    "use_env_variable": "JAWSDB_URL",
     "dialect": "mysql"
   }
 };
