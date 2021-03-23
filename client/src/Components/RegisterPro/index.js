@@ -1,6 +1,102 @@
 import React, { Component } from "react";
 import axios from "axios";
-import "./style.css";
+import styled from 'styled-components';
+
+const ProInfo = styled.div`
+  margin: 0 auto 0 auto;
+  @media (min-width: 482px) {
+    max-width: 449px;
+  }
+
+  @media (min-width: 701px) {
+    max-width: 668px;
+  }
+
+  @media (min-width: 1026px) {
+    max-width: 946px;
+  }
+  > h1 {
+    color: #7D7B6D;
+    font-size: 24px;
+    line-height: 28px;
+    font-weight: 700;
+    text-align: center;
+    margin-top: 34px;
+    margin-bottom: 24px;
+    @media (max-width: 701px) {
+      margin-top: 100px;
+    }
+  }
+  > form {
+    background-color: #7D7B6D;
+    border: 1px solid #e9eced;
+    border-radius: 4px;
+    padding: 32px 72px 40px;
+    margin-bottom: 40px;
+    margin: auto;
+    @media (max-width: 701px) {
+      border: none;
+    }
+    > input {
+      width: 100%;
+      background-color: #fff;
+      border: 1px solid #d3d4d5;
+      border-radius: 4px;
+      padding: 13px 15px;
+      font-size: 16px;
+      vertical-align: middle;
+      line-height: 24px;
+      margin: 0 0 5px;
+    }
+    > label {
+      color: #FFE033;
+      display: block;
+      margin: 4px 0 4px 0;
+      font-weight: 700;
+    }
+    > p {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      line-height: 18px;
+    }
+    > button {
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+      display: inline-block;
+      vertical-align: middle;
+      white-space: nowrap;
+      cursor: pointer;
+      margin: 0;
+      line-height: 24px;
+      font-size: 16px;
+      font-weight: 700;
+      margin: 10px 0 0 0;
+      user-select: none;
+      border-radius: 4px;
+      padding: 12px 22px;
+      overflow: visible;
+      background-color: #FFE033;
+      border: 2px solid transparent;
+      color: #7D7B6D;
+    }
+    > div {
+      display: flex;
+      align-items: center;
+      font-weight: 400;
+      color: #676d73;
+      margin-top: 16px;
+      margin-bottom: 16px;
+    }
+    a {
+      color: #009fd9;
+      fill: #009fd9;
+      cursor: pointer;
+    }
+  }
+`;
+
 
 export default class RegisterPro extends Component {
   constructor(props) {
@@ -16,13 +112,14 @@ export default class RegisterPro extends Component {
       servicePro_state: "",
       servicePro_zipCode: "",
       servicePro_profileImg: "",
+      UserId: window.localStorage.getItem('user')
     };
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleFileChange = this.handleFileChange.bind(this);
   }
 
-
+   
   handleInputChange(event) {
     const formType = event.target.id;
     this.setState({
@@ -36,6 +133,24 @@ export default class RegisterPro extends Component {
     
   }
 
+  openWidget = () => {
+    // create the widget
+    cloudinary.createUploadWidget(
+      {
+        cloudName: 'august-innovations-inc',
+        uploadPreset: 'uz3n96ci',
+      },
+      (error, result) => {
+        if (result.event === 'success') {
+        this.setState({
+          imageUrl: result.info.secure_url,
+          imageAlt: `An image of ${result.info.original_filename}`
+        })}
+      },
+    ).open();
+     // open up the widget after creation
+  };
+
   handleFormSubmit(event) {
     event.preventDefault();
     const {
@@ -47,7 +162,7 @@ export default class RegisterPro extends Component {
       servicePro_city,
       servicePro_state,
       servicePro_zipCode,
-      servicePro_profileImg,
+      imageUrl,
 
     } = this.state;
     const formData = {
@@ -59,12 +174,10 @@ export default class RegisterPro extends Component {
       "servicePro_city": servicePro_city,
       "servicePro_state": servicePro_state,
       "servicePro_zipCode": servicePro_zipCode,
-      "servicePro_profileImg": servicePro_profileImg,
+      "servicePro_profileImg": imageUrl,
+      "UserId": this.state.UserId
       
     };
-
-
-    console.log("****",formData);
 
     axios.post("/api/registerpros", formData).then((res) => {
       console.log("***********",res.data);
@@ -81,7 +194,7 @@ export default class RegisterPro extends Component {
     if (this.state.success) {
       result = (
         <div className="success-message">
-          Your application submission was a success!
+          Your profile submission was a success!
         </div>
       );
     }
@@ -99,13 +212,15 @@ export default class RegisterPro extends Component {
 
   render() {
     return (
+      <ProInfo>
+      <h1>Register Your Service</h1>
       <form className="registration-form" onSubmit={this.handleFormSubmit}>
-        <fieldset
+{/*        <fieldset
           className="form-fields container"
           disabled={this.disableForm()}
-        >
-          <ul className="form-container col-lg-6">
-            <li className="form-list-item">
+    >*/}
+{/*          <ul className="form-container col-lg-6">
+            <li className="form-list-item">*/}
               <label htmlFor="servicePro_companyName">COMPANY NAME</label>
               <input
                 type="text"
@@ -114,8 +229,8 @@ export default class RegisterPro extends Component {
                 placeholder="Company Name"
                 onChange={this.handleInputChange}
               />
-            </li>
-            <li className="form-list-item">
+{/*              </li>
+              <li className="form-list-item">*/}
               <label htmlFor="servicePro_url">WEBSITE</label>
               <input
                 type="text"
@@ -124,8 +239,8 @@ export default class RegisterPro extends Component {
                 placeholder="Website"
                 onChange={this.handleInputChange}
               />
-            </li>
-            <li className="form-list-item">
+{/*              </li>
+              <li className="form-list-item">*/}
               <label htmlFor="servicePro_phone">PHONE NUMBER</label>
               <input
                 type="text"
@@ -134,18 +249,19 @@ export default class RegisterPro extends Component {
                 placeholder="Phone Number"
                 onChange={this.handleInputChange}
               />
-            </li>
-            <li className="form-list-item">
+{/*              </li>
+              <li className="form-list-item">*/}
               <label htmlFor="servicePro_profileImg">PROFILE IMAGE</label>
               <input
-                type="file"
+                type="button"
+                className="btn widget-btn"
                 id="servicePro_profileImg"
                 name="servicePro_profileImg"
                 placeholder="Image or Logo"
-                onChange={this.handleFileChange}
+                onClick={this.openWidget}
               />
-              </li>
-            <li className="form-list-item">
+{/*              </li>
+              <li className="form-list-item">*/}
               <label htmlFor="servicePro_category">CATEGORY</label>
               <select
                     type="text"
@@ -170,8 +286,8 @@ export default class RegisterPro extends Component {
                     <option value="Window Repair">Window Repair</option>
                     <option value="Table Booth Repair">Table Booth Repair</option>
                   </select>
-                  </li>
-              <li className="form-list-item">
+{/*              </li>
+              <li className="form-list-item">*/}
               <label htmlFor="servicePro_address">ADDRESS</label>
               <input
                 type="text"
@@ -180,8 +296,8 @@ export default class RegisterPro extends Component {
                 placeholder="Address"
                 onChange={this.handleInputChange}
               />
-              </li>
-              <li className="form-list-item">
+{/*              </li>
+              <li className="form-list-item">*/}
               <label htmlFor="servicePro_city">City</label>
               <input
                 type="text"
@@ -190,8 +306,8 @@ export default class RegisterPro extends Component {
                 placeholder="City"
                 onChange={this.handleInputChange}
               />
-              </li>
-                <li className="form-list-item">
+{/*              </li>
+              <li className="form-list-item">*/}
                   <label htmlFor="servicePro_state">STATE</label>
                   <select
                     type="text"
@@ -252,8 +368,8 @@ export default class RegisterPro extends Component {
                     <option value="WI">Wisconsin</option>
                     <option value="WY">Wyoming</option>
                   </select>
-                </li>
-              <li className="form-list-item">
+{/*              </li>
+              <li className="form-list-item">*/}
                   <label className="form-zip-label" htmlFor="servicePro_zipCode">
                     ZIP
                   </label>
@@ -264,52 +380,20 @@ export default class RegisterPro extends Component {
                     placeholder="Zip"
                     onChange={this.handleInputChange}
                   />
-                </li>
-            <li className="form-list-item">
-              <input
+{/*              </li>
+              <li className="form-list-item">*/}
+{/*}              <input
                 className="form-submit-btn"
                 type="submit"
                 value="Submit"
-              />
+            /*/}
+            <button type="submit">Submit</button>
               {this.renderSuccessMessage()}
-            </li>
+{/*          </li>
           </ul>
-        </fieldset>
+        </fieldset>*/}
       </form>
-
+      </ProInfo>
     )
   }
 }
-
-
-// render() {
-//     return (
-//         <div className="serviceProInfo">
-//         <label> First Name:</label>
-//         <input type="text"/>
-//         <label> Last Name:</label>
-//         <input type="text"/>
-//         <label> Company Name:</label>
-//         <input type="text"/>
-//         <label>Category:</label>
-//         <input type="text"/>
-//         <label>Description of work:</label>
-//         <input type="text"/>
-//         <label>Address:</label>
-//         <input type="text"/>
-//         <label>City:</label>
-//         <input type="text"/>
-//         <label>State:</label>
-//         <input type="text"/>
-//         <label>Zip Code:</label>
-//         <input type="text"/>
-//         <label>Email:</label>
-//         <input type="text"/>
-//         <label>Username:</label>
-//         <input type="text"/>
-//         <label>Website:</label>
-//         <input type="text"/>
-//         <label>Profile Image:</label>
-//         <input type="text"/>
-//         <button>Add Service Pro</button>
-//         </div>
